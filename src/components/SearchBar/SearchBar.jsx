@@ -9,7 +9,7 @@ export default function SearchBar() {
       <nav>
         <div className="navWrapper flex justify-between px-10 py-6">
           <div className="logo">
-            <img src="../images/moviebox_logo.png" alt="Movie box logo" srcset="" />
+            <img src="../images/moviebox_logo.png" alt="Movie box logo" />
           </div>
           <div className="search-bar">
             <form action="" method="get" className="inline-flex relative">

@@ -57,7 +57,7 @@ export default function Header() {
         style={{ backgroundImage: `url(${getDisplayedMovies()[0]})` }}
       >
         <SearchBar />
-        <div className="pagination flex flex-col absolute right-0 pr-4 text-white">
+        <div className="pagination flex flex-col absolute right-0 pr-4 text-white font-bold gap-4 drop-shadow-lg">
           <button onClick={handlePrevPage} disabled={currentPage === 1}>
             1
           </button>
