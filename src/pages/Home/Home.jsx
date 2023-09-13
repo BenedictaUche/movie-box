@@ -6,10 +6,10 @@ import Footer from '../../components/Footer/Footer';
 
 export default function Home() {
   return (
-    <>
+    <div className='bg-slate-100'>
         <Header />
         <MovieList />
         <Footer />
-    </>
+    </div>
   )
 }

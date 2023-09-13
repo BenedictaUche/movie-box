@@ -53,7 +53,7 @@ export default function Header() {
   return (
     <>
       <div
-        className="header-container bg-no-repeat bg-cover h-[30rem] bg-center relative"
+        className="header-container bg-no-repeat bg-cover h-[30rem] bg-center relative shadow-md"
         style={{ backgroundImage: `url(${getDisplayedMovies()[0]})` }}
       >
         <SearchBar />
