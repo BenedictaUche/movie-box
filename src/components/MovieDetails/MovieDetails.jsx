@@ -170,13 +170,13 @@ export default function MovieDetails() {
         <div className="flex flex-col lg:flex lg:flex-row justify-between gap-4 mt-4 font-['Poppins', sans-serif;]">
           <div className="flex flex-col gap-6">
             <div className="flex">
-              <h2 className="font-bold text-2xl">{movie.title}</h2>
-              <h2 className="">{new Date(movie.release_date).getFullYear()}</h2>
+              <h2 className="font-bold text-2xl" data-testid='movie-title'>{movie.title}</h2>
+              <h2 className="" data-testid='movie-release-date'>{new Date(movie.release_date).getFullYear()}</h2>
               <h2>{movie.pg}</h2>
               <button className="">{genres}</button>
             </div>
 
-            <div className="movie-overview text-lg font-sans font-semibold text-gray-700">
+            <div className="movie-overview text-lg font-sans font-semibold text-gray-700" data-testid='movie-overview'>
               {movie.overview}
             </div>
 
