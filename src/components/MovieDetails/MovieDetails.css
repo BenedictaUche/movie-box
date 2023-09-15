@@ -13,6 +13,16 @@
     color: #333;
 }
 
+@media (max-width: 768px) {
+    .details {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        grid-template-areas:
+        'sidebar'
+        'content';
+    }
+}
+
 .sidebar {
     grid-area: sidebar;
     background-color: transparent;

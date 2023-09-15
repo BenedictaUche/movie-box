@@ -11,7 +11,7 @@ import { FaAngleRight } from "react-icons/fa";
 import tmdbApi from "../../services/api";
 import "./MovieList.css";
 
-export default function MovieCard() {
+export default function MovieCard({ searchResults }) {
   const [movies, setMovies] = useState([]);
   const [rating, getRating] = useState([]);
   const [genres, getGenres] = useState([]);

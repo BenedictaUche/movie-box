@@ -6,13 +6,20 @@ import "./MovieDetails.css";
 import { FaHome, FaVideo, FaTv, FaCalendar } from "react-icons/fa";
 import { FaRightFromBracket, FaStar } from "react-icons/fa6";
 import { Select, Text } from "@chakra-ui/react";
-import { m } from "framer-motion";
+
+
+
 
 export default function MovieDetails() {
   const { movieId } = useParams();
   const [movie, setMovie] = useState({});
   const [credits, setCredits] = useState({});
   const [awards, setAwards] = useState([{}]);
+  const [trailers, setTrailers] = useState([{}]);
+  const [trending, setTrending] = useState([{}]);
+
+
+
 
   useEffect(() => {
     async function fetchMovieDetails() {
@@ -42,12 +49,38 @@ export default function MovieDetails() {
       }
     }
 
+    async function fetchMovieTrailers() {
+      try {
+        const response = await tmdbApi.get(`/movies/${movieId}/videos`);
+        setTrailers(response.data.results);
+      } catch(error) {
+        console.error(`Error fetching movie trailers for ID ${movieId}:`, error);
+      }
+    }
+
+    async function fetchTrendingMovies() {
+      try {
+        const response = await tmdbApi.get(`/trending/movie/week`);
+        setTrending(response.data.results);
+      } catch(error) {
+        console.error(`Error fetching trending movies:`, error);
+      }
+    }
+
+
     fetchMovieDetails();
     fetchMovieCredits();
     fetchMovieAwards();
+    fetchMovieTrailers();
+    fetchTrendingMovies();
+
   }, [movieId]);
 
-  const genres = movie.genres?.map((genre) => genre.name).join(", ");
+  // const genres = movie.genres?.map((genre) => genre.name).join(", ");
+  // put each genre in a button
+  const genres = movie.genres?.map((genre) => (
+    <button className="text-pink-700 border-2 mr-2 px-3 py-2 rounded-3xl flex-row border-pink-500">{genre.name}</button>
+  ));
   const releaseYear = new Date(movie.release_date).getFullYear();
 
   const directors = credits.crew?.filter((person) => person.job === "Director");
@@ -56,9 +89,30 @@ export default function MovieDetails() {
   );
   const stars = credits.cast?.slice(0, 5);
 
+  const trendingMovies = trending
+  ?.slice(0, 3)
+  .map((movie) => (
+    <div className="flex gap">
+      <Link to={`/movie/${movie.id}`}>
+      <img
+        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+        alt={movie.title}
+        className="w-[100%] h-[10rem]"
+      />
+      </Link>
+      {/* <h2 className="font-bold text-lg">{movie.title}</h2>
+      <p className="text-gray-500">
+        {new Date(movie.release_date).getFullYear()}
+      </p> */}
+
+    </div>
+
+  ));
+
+
   return (
     <div className="details">
-      <aside className="sidebar">
+      <aside className="sidebar lg:block hidden">
         <div className="aside_content">
           <div className="flex gap-6 align-middle py-10">
             <img src="../images/tv.png" alt="moviebox logo" />
@@ -69,7 +123,7 @@ export default function MovieDetails() {
 
           <div className="flex flex-col gap-10">
             <span className="flex gap-4">
-              <FaHome /> <p className="text-lg font-sans font-medium">Home</p>
+              <FaHome /> <Link to='/' className="text-lg font-sans font-medium">Home</Link>
             </span>
             <span className="flex gap-4">
               <FaVideo />{" "}
@@ -108,19 +162,20 @@ export default function MovieDetails() {
 
       <main className="content">
         <div className="top">
-          <img
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+          <iframe
+            src={`https://image.tmdb.org/t/p/w500${movie.video==null ? movie.video : trailers[0].key}`}
             alt={movie.title}
             className="w-[100%] h-[20rem] rounded-xl"
           />
         </div>
 
-        <div className="flex justify-between gap-4">
+        <div className="flex flex-col lg:flex lg:flex-row justify-between gap-4 mt-4 font-['Poppins', sans-serif;]">
           <div className="flex flex-col gap-6">
             <div className="flex">
               <h2 className="font-bold text-2xl">{movie.title}</h2>
               <h2 className="">{new Date(movie.release_date).getFullYear()}</h2>
               <h2>{movie.pg}</h2>
+              <button className="">{genres}</button>
             </div>
 
             <div className="movie-overview text-lg font-sans font-semibold text-gray-700">
@@ -148,24 +203,47 @@ export default function MovieDetails() {
               </Text>
             </div>
 
-            <div className="top-rated">
-              <Link>Top rated movie #{ movie.rating }</Link>
-            </div>
-            <div className="awards">
-              <Select placeholder='Awards 9 nominations' className="w-72"></Select>
+            <div className="flex gap-2">
+              <div className="top-rated bg-pink-700 px-4 py-2 rounded-lg text-white">
+                <Link>Top rated movie #{movie.rating}</Link>
+              </div>
+              <div className="awards">
+                <Select
+                  placeholder="Awards 9 nominations"
+                  className="w-72"
+                >
+                  {awards?.map((award) => (
+                    <option key={award.id}>{award.name}</option>
+                  ))}
+                </Select>
+              </div>
             </div>
           </div>
 
           <div className="side text-black flex flex-col gap-4 relative">
             <div className="flex absolute flex-row right-0">
-              <span className="right-0"><FaStar className=" text-yellow-400" /></span>
-              <span>{movie.vote_average} | {movie.vote_count}</span>
+              <span className="right-0">
+                <FaStar className=" text-yellow-400" />
+              </span>
+              <span>
+                {movie.vote_average} | {movie.vote_count}
+              </span>
             </div>
             <div className="flex flex-col gap-3 mt-14">
-              <Link className="bg-pink-700 text-white px-8 py-2 rounded-lg w-72 text-center">See Showtimes</Link>
-              <Link className="bg-pink-100 border-2 border-pink-600 rounded-lg w-72 px-8 py-2 text-center">More Watch options</Link>
+              <Link className="bg-pink-700 text-white px-8 py-2 rounded-lg w-72 text-center">
+                See Showtimes
+              </Link>
+              <Link className="bg-pink-100 border-2 border-pink-600 rounded-lg w-72 px-8 py-2 text-center">
+                More Watch options
+              </Link>
+              <div className="flex gap-1 relative mt-4">
+                {trendingMovies}
+                <div className="absolute flex gap-4 bottom-0 bg-slate-500 py-2 px-1 w-full">
+                  <img src="../images/List.png" alt="" className="h-[20px]" />
+                  <p className="text-white font-medium text-[12px]">The Best Movies and Shows in September</p>
+                </div>
+              </div>
             </div>
-
           </div>
         </div>
         {/* <p>Genres: {movie.genres?.map((genre) => genre.name).join(", ")}</p> */}
