@@ -8,8 +8,6 @@ import { FaRightFromBracket, FaStar } from "react-icons/fa6";
 import { Select, Text } from "@chakra-ui/react";
 
 
-
-
 export default function MovieDetails() {
   const { movieId } = useParams();
   const [movie, setMovie] = useState({});
