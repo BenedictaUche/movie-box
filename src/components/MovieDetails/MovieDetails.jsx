@@ -15,6 +15,7 @@ export default function MovieDetails() {
   const [awards, setAwards] = useState([{}]);
   const [trailers, setTrailers] = useState([{}]);
   const [trending, setTrending] = useState([{}]);
+  const [runtime, setRuntime] = useState([{}]);
 
 
 
@@ -65,21 +66,32 @@ export default function MovieDetails() {
       }
     }
 
+    async function fetchMovieRuntime() {
+      try {
+        const response = await tmdbApi.get(`/movie/${movieId}`);
+        setRuntime(response.data.runtime);
+      } catch(error) {
+        console.error(`Error fetching movie runtime for ID ${movieId}:`, error);
+      }
+    }
+
 
     fetchMovieDetails();
     fetchMovieCredits();
     fetchMovieAwards();
     fetchMovieTrailers();
     fetchTrendingMovies();
+    fetchMovieRuntime();
 
   }, [movieId]);
 
   // const genres = movie.genres?.map((genre) => genre.name).join(", ");
   // put each genre in a button
   const genres = movie.genres?.map((genre) => (
-    <button className="text-pink-700 border-2 mr-2 px-3 py-2 rounded-3xl flex-row border-pink-500">{genre.name}</button>
+    <button className="text-pink-700 border-2 px-2 py-1 text-[15px] gap-1 rounded-3xl flex-row border-pink-500">{genre.name}</button>
   ));
   const releaseYear = new Date(movie.release_date).getFullYear();
+
 
   const directors = credits.crew?.filter((person) => person.job === "Director");
   const writers = credits.crew?.filter(
@@ -87,8 +99,8 @@ export default function MovieDetails() {
   );
   const stars = credits.cast?.slice(0, 5);
 
-  const trendingMovies = trending
-  ?.slice(0, 3)
+
+  const trendingMovies = trending?.slice(0, 3)
   .map((movie) => (
     <div className="flex gap">
       <Link to={`/movie/${movie.id}`}>
@@ -106,6 +118,9 @@ export default function MovieDetails() {
     </div>
 
   ));
+
+  // show the runtime in hours and minutes
+  const runtimeHours = `${Math.floor(runtime / 60)}h ${runtime % 60}m`;
 
 
   return (
@@ -160,8 +175,8 @@ export default function MovieDetails() {
 
       <main className="content">
         <div className="top">
-          <iframe
-            src={`https://image.tmdb.org/t/p/w500${movie.video==null ? movie.video : trailers[0].key}`}
+          <img
+            src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
             alt={movie.title}
             className="w-[100%] h-[20rem] rounded-xl"
           />
@@ -169,10 +184,11 @@ export default function MovieDetails() {
 
         <div className="flex flex-col lg:flex lg:flex-row justify-between gap-4 mt-4 font-['Poppins', sans-serif;]">
           <div className="flex flex-col gap-6">
-            <div className="flex">
-              <h2 className="font-bold text-2xl" data-testid='movie-title'>{movie.title}</h2>
+            <div className="flex gap-2">
+              <h2 className="font-bold text-xl" data-testid='movie-title'>{movie.title}</h2>
               <h2 className="" data-testid='movie-release-date'>{new Date(movie.release_date).getFullYear()}</h2>
               <h2>{movie.pg}</h2>
+              <p data-testid='movie-runtime'>{runtimeHours}</p>
               <button className="">{genres}</button>
             </div>
 
